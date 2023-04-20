@@ -1,0 +1,18 @@
+### get all games
+GET http://localhost:8080/games
+
+### get game with ID
+GET http://localhost:8080/games/2
+
+### delete game with ID
+DELETE http://localhost:8080/games/3
+
+### add a game
+PUT http://localhost:8080/games
+Content-Type: application/json
+
+{
+  "id": 4,
+  "name": "Age of Empires",
+  "played": false
+}
