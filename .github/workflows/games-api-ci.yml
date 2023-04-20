@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  test:
     runs-on: rust:alpine3.17
     steps:
     - uses: actions/checkout@v3
