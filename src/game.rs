@@ -9,7 +9,11 @@ pub struct Game {
 
 impl Game {
     pub fn new(id: i8, name: &str) -> Game {
-        Game { id: id, name: name.to_string(), played: false }
+        Game {
+            id: id,
+            name: name.to_string(),
+            played: false,
+        }
     }
 
     fn mark_played(&mut self) {

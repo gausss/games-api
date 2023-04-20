@@ -7,8 +7,8 @@ pub trait Store<T> {
 }
 
 pub mod in_memory {
-    use std::collections::HashMap;
     use crate::store::Store;
+    use std::collections::HashMap;
 
     #[derive(Clone)]
     pub struct InMemoryStore<T> {
@@ -18,18 +18,19 @@ pub mod in_memory {
     impl<T> InMemoryStore<T> {
         pub fn new() -> InMemoryStore<T> {
             InMemoryStore {
-                data: HashMap::new()
+                data: HashMap::new(),
             }
         }
 
         pub fn init(init_data: HashMap<i8, T>) -> InMemoryStore<T> {
-            InMemoryStore {
-                data: init_data
-            }
+            InMemoryStore { data: init_data }
         }
     }
 
-    impl<T> Store<T> for InMemoryStore<T> where T: Clone {
+    impl<T> Store<T> for InMemoryStore<T>
+    where
+        T: Clone,
+    {
         fn save(&mut self, id: &i8, value: &T) -> Option<T> {
             self.data.insert(id.clone(), value.clone())
         }
@@ -53,10 +54,10 @@ pub mod in_memory {
 
     #[cfg(test)]
     mod test {
-        use std::collections::HashMap;
         use crate::game::Game;
         use crate::store::in_memory::InMemoryStore;
         use crate::store::Store;
+        use std::collections::HashMap;
 
         #[test]
         fn test_save_game() {
@@ -72,7 +73,8 @@ pub mod in_memory {
 
         #[test]
         fn test_delete_game() {
-            let mut store: InMemoryStore<Game> = InMemoryStore::init(HashMap::from([(1, Game::new(1, "Age of Empires"))]));
+            let mut store: InMemoryStore<Game> =
+                InMemoryStore::init(HashMap::from([(1, Game::new(1, "Age of Empires"))]));
             assert_eq!(store.len(), 1);
 
             store.delete(&1);
