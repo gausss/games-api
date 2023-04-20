@@ -31,7 +31,7 @@ pub async fn update_game_by_id(
     game_store: Data<Mutex<InMemoryStore<Game>>>,
 ) -> HttpResponse {
     let mut store = game_store.lock().unwrap();
-    return match store.save(&game.id, &game.0) {
+    return match store.save(game.0) {
         None => HttpResponse::Created().finish(),
         Some(_) => HttpResponse::Ok().finish(),
     };

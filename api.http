@@ -5,7 +5,7 @@ GET http://localhost:8080/games
 GET http://localhost:8080/games/2
 
 ### delete game with ID
-DELETE http://localhost:8080/games/3
+DELETE http://localhost:8080/games/4
 
 ### add a game
 PUT http://localhost:8080/games

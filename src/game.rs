@@ -1,3 +1,4 @@
+use crate::store::Identified;
 use serde::{Deserialize, Serialize};
 
 #[derive(Eq, PartialEq, Debug, Deserialize, Serialize, Clone)]
@@ -21,15 +22,23 @@ impl Game {
     }
 }
 
+impl Identified for Game {
+    fn get_id(&self) -> i8 {
+        self.id
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::game::Game;
+    use crate::store::Identified;
 
     #[test]
     fn test_game() {
         let game = Game::new(1, "Age of Empires");
         assert_eq!(game.played, false);
         assert_eq!(game.name, "Age of Empires");
+        assert_eq!(game.get_id(), 1);
 
         let mut game = game;
         game.mark_played();
