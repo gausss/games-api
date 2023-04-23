@@ -1,16 +1,17 @@
 #[macro_use(get, put, delete)]
 extern crate actix_web;
 
-use crate::game::Game;
-use crate::store::in_memory::InMemoryStore;
-use actix_web::web::Data;
-use actix_web::{App, HttpServer};
 use std::collections::HashMap;
 use std::io::Result;
 use std::sync::Mutex;
 
-mod controller;
-mod game;
+use actix_web::web::Data;
+use actix_web::{App, HttpServer};
+
+pub use game::Game;
+pub use store::InMemoryStore;
+
+pub mod game;
 mod store;
 
 #[actix_web::main]
@@ -24,10 +25,10 @@ async fn main() -> Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(store.clone())
-            .service(controller::get_games)
-            .service(controller::get_game_by_id)
-            .service(controller::update_game_by_id)
-            .service(controller::delete_game_by_id)
+            .service(game::get_games)
+            .service(game::get_game_by_id)
+            .service(game::update_game_by_id)
+            .service(game::delete_game_by_id)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

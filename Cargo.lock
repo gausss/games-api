@@ -506,7 +506,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "games-api"
+name = "games_api"
 version = "0.1.0"
 dependencies = [
  "actix-web",

@@ -1,61 +1,13 @@
-use crate::game::Game;
-use crate::store::in_memory::InMemoryStore;
-use crate::store::Store;
-use actix_web::web::{Data, Json, Path};
-use actix_web::HttpResponse;
-use std::sync::Mutex;
-
-// InMemoryStore<Game> should be dyn Store<Game>, but it doesn't work at the moment.
-#[get("/games")]
-pub async fn get_games(game_store: Data<Mutex<InMemoryStore<Game>>>) -> HttpResponse {
-    let store = game_store.lock().unwrap();
-    HttpResponse::Ok().json(Json(store.get_all()))
-}
-
-#[get("/games/{game_id}")]
-pub async fn get_game_by_id(
-    path: Path<String>,
-    game_store: Data<Mutex<InMemoryStore<Game>>>,
-) -> HttpResponse {
-    let id = path.into_inner().parse().unwrap();
-    let store = game_store.lock().unwrap();
-    return match store.get(&id) {
-        None => HttpResponse::NotFound().finish(),
-        Some(game) => HttpResponse::Ok().json(game),
-    };
-}
-
-#[put("/games")]
-pub async fn update_game_by_id(
-    game: Json<Game>,
-    game_store: Data<Mutex<InMemoryStore<Game>>>,
-) -> HttpResponse {
-    let mut store = game_store.lock().unwrap();
-    return match store.save(game.0) {
-        None => HttpResponse::Created().finish(),
-        Some(_) => HttpResponse::Ok().finish(),
-    };
-}
-
-#[delete("/games/{game_id}")]
-pub async fn delete_game_by_id(
-    path: Path<String>,
-    game_store: Data<Mutex<InMemoryStore<Game>>>,
-) -> HttpResponse {
-    let id = path.into_inner().parse().unwrap();
-    let mut store = game_store.lock().unwrap();
-    return match store.delete(&id) {
-        None => HttpResponse::NotFound().finish(),
-        Some(_) => HttpResponse::Ok().finish(),
-    };
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
     use actix_web::http::StatusCode;
+    use actix_web::web::Data;
     use actix_web::{test, App};
+    use games_api::game::{delete_game_by_id, get_game_by_id, get_games, update_game_by_id};
+    use games_api::Game;
+    use games_api::InMemoryStore;
     use std::collections::HashMap;
+    use std::sync::Mutex;
 
     #[actix_web::test]
     async fn test_get_games() {
