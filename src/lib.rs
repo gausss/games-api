@@ -9,14 +9,14 @@ use actix_web::web::Data;
 use actix_web::{App, HttpServer};
 
 pub use game::Game;
-pub use store::InMemoryStore;
+pub use crate::game_repository::InMemoryGameRepository;
 
 pub mod game;
-mod store;
+mod game_repository;
 
 #[actix_web::main]
 async fn main() -> Result<()> {
-    let store = Data::new(Mutex::new(InMemoryStore::<Game>::init(HashMap::from([
+    let store = Data::new(Mutex::new(InMemoryGameRepository::init(HashMap::from([
         (1, Game::new(1, "Demon Souls")),
         (2, Game::new(2, "Dark Souls")),
         (3, Game::new(3, "Bloodborn")),

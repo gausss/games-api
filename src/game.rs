@@ -1,14 +1,12 @@
 use std::sync::Mutex;
 
-use crate::{
-    store::{Identified, Store},
-    InMemoryStore,
-};
 use actix_web::{
     web::{Data, Json, Path},
     HttpResponse,
 };
 use serde::{Deserialize, Serialize};
+use crate::game_repository::InMemoryGameRepository;
+use crate::game_repository::GameRepository;
 
 #[derive(Eq, PartialEq, Debug, Deserialize, Serialize, Clone)]
 pub struct Game {
@@ -25,27 +23,21 @@ impl Game {
     }
 }
 
-impl Identified for Game {
-    fn get_id(&self) -> u8 {
-        self.id
-    }
-}
-
-// InMemoryStore<Game> should be dyn Store<Game>, but it doesn't work at the moment.
+// dyn GameRepository should be injected here but doesn't work yet
 #[get("/games")]
-pub async fn get_games(game_store: Data<Mutex<InMemoryStore<Game>>>) -> HttpResponse {
-    let store = game_store.lock().unwrap();
-    HttpResponse::Ok().json(Json(store.get_all()))
+pub async fn get_games(game_repository: Data<Mutex<InMemoryGameRepository>>) -> HttpResponse {
+    let games = game_repository.lock().unwrap();
+    HttpResponse::Ok().json(Json(games.get_all()))
 }
 
 #[get("/games/{game_id}")]
 pub async fn get_game_by_id(
     path: Path<String>,
-    game_store: Data<Mutex<InMemoryStore<Game>>>,
+    game_repository: Data<Mutex<InMemoryGameRepository>>,
 ) -> HttpResponse {
     let id = path.into_inner().parse().unwrap();
-    let store = game_store.lock().unwrap();
-    return match store.get(&id) {
+    let games = game_repository.lock().unwrap();
+    return match games.get(&id) {
         None => HttpResponse::NotFound().finish(),
         Some(game) => HttpResponse::Ok().json(game),
     };
@@ -54,10 +46,10 @@ pub async fn get_game_by_id(
 #[put("/games")]
 pub async fn update_game_by_id(
     game: Json<Game>,
-    game_store: Data<Mutex<InMemoryStore<Game>>>,
+    game_repository: Data<Mutex<InMemoryGameRepository>>,
 ) -> HttpResponse {
-    let mut store = game_store.lock().unwrap();
-    return match store.save(game.0) {
+    let mut games = game_repository.lock().unwrap();
+    return match games.save(game.0) {
         None => HttpResponse::Created().finish(),
         Some(_) => HttpResponse::Ok().finish(),
     };
@@ -66,11 +58,11 @@ pub async fn update_game_by_id(
 #[delete("/games/{game_id}")]
 pub async fn delete_game_by_id(
     path: Path<String>,
-    game_store: Data<Mutex<InMemoryStore<Game>>>,
+    game_repository: Data<Mutex<InMemoryGameRepository>>,
 ) -> HttpResponse {
     let id = path.into_inner().parse().unwrap();
-    let mut store = game_store.lock().unwrap();
-    return match store.delete(&id) {
+    let mut games = game_repository.lock().unwrap();
+    return match games.delete(&id) {
         None => HttpResponse::NotFound().finish(),
         Some(_) => HttpResponse::Ok().finish(),
     };

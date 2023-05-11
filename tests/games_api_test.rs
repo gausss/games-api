@@ -5,13 +5,13 @@ mod tests {
     use actix_web::{test, App};
     use games_api::game::{delete_game_by_id, get_game_by_id, get_games, update_game_by_id};
     use games_api::Game;
-    use games_api::InMemoryStore;
+    use games_api::InMemoryGameRepository;
     use std::collections::HashMap;
     use std::sync::Mutex;
 
     #[actix_web::test]
     async fn test_get_games() {
-        let test_store = Data::new(Mutex::new(InMemoryStore::init(HashMap::from([
+        let test_store = Data::new(Mutex::new(InMemoryGameRepository::init(HashMap::from([
             (1, Game::new(1, "Demon Souls")),
             (2, Game::new(2, "Age of Empires")),
         ]))));
@@ -26,7 +26,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_get_game_by_id() {
-        let test_store = Data::new(Mutex::new(InMemoryStore::init(HashMap::from([(
+        let test_store = Data::new(Mutex::new(InMemoryGameRepository::init(HashMap::from([(
             1,
             Game::new(1, "Demon Souls"),
         )]))));
@@ -44,7 +44,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_delete_game_by_id() {
-        let test_store = Data::new(Mutex::new(InMemoryStore::init(HashMap::from([(
+        let test_store = Data::new(Mutex::new(InMemoryGameRepository::init(HashMap::from([(
             1,
             Game::new(1, "Demon Souls"),
         )]))));
@@ -65,7 +65,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_add_game() {
-        let test_store = Data::new(Mutex::new(InMemoryStore::init(HashMap::from([(
+        let test_store = Data::new(Mutex::new(InMemoryGameRepository::init(HashMap::from([(
             1,
             Game::new(1, "Demon Souls"),
         )]))));
